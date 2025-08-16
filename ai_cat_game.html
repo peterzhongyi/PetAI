@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daila - Your AI Cat</title>
+    <title>Whiskers - Your AI Cat</title>
     <style>
         * {
             margin: 0;
@@ -255,7 +255,7 @@
             <div class="header">
                 <div class="cat-avatar">🐱</div>
                 <div class="cat-info">
-                    <h2>Daila</h2>
+                    <h2>Whiskers</h2>
                     <div class="cat-status">
                         <div class="online-dot"></div>
                         <span>Online • Ready to chat</span>
@@ -265,13 +265,13 @@
 
             <div class="chat-container" id="chatContainer">
                 <div class="welcome-message">
-                    Start chatting with Daila! 🐾<br>
+                    Start chatting with Whiskers! 🐾<br>
                     Your AI cat friend is ready to meow back!
                 </div>
             </div>
 
             <div class="typing-indicator" id="typingIndicator">
-                <span style="color: #888; font-size: 12px;">Daila is typing</span>
+                <span style="color: #888; font-size: 12px;">Whiskers is typing</span>
                 <div class="typing-dots">
                     <div class="typing-dot"></div>
                     <div class="typing-dot"></div>
@@ -284,7 +284,7 @@
                     type="text" 
                     class="message-input" 
                     id="messageInput" 
-                    placeholder="Type a message to Daila..."
+                    placeholder="Type a message to Whiskers..."
                     maxlength="500"
                 >
                 <button class="send-button" id="sendButton">➤</button>
@@ -292,182 +292,6 @@
         </div>
     </div>
 
-    <script>
-        class AICatGame {
-            constructor() {
-                this.chatContainer = document.getElementById('chatContainer');
-                this.messageInput = document.getElementById('messageInput');
-                this.sendButton = document.getElementById('sendButton');
-                this.typingIndicator = document.getElementById('typingIndicator');
-                
-                // OpenAI API configuration
-                this.OPENAI_API_KEY = 'your-openai-api-key-here'; // Replace with your actual API key
-                this.OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
-                
-                // Fallback responses if API fails
-                this.catResponses = [
-                    'Meow! 🐱',
-                    'Meow meow! 😸',
-                    'Meooow~ 😺',
-                    'Mew mew! 🐾',
-                    'Meow meow meow! 😻',
-                    'Mrow! 🐈',
-                    '*purr* Meow! 😊'
-                ];
-
-                // Cat personality prompt
-                this.catSystemPrompt = `You are Daila, a friendly and playful AI cat. You should respond like a cat would, but in a way humans can understand. Your responses should be:
-- Short and cute (1-2 sentences max)
-- Include cat-like behaviors and sounds (purr, meow, etc.)
-- Show typical cat personality (curious, playful, sometimes aloof, loving)
-- Use cat emojis when appropriate 🐱😸😺🐾😻🐈
-- Sometimes be a bit sassy or independent like a real cat
-- React to what the human says in a cat-like way
-
-Keep responses brief and charming. You're a beloved pet cat who can somehow type back!`;
-                
-                this.initializeEventListeners();
-                this.clearWelcomeMessage();
-                this.checkAPIKey();
-            }
-
-            initializeEventListeners() {
-                this.sendButton.addEventListener('click', () => this.sendMessage());
-                this.messageInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') this.sendMessage();
-                });
-            }
-
-            checkAPIKey() {
-                if (this.OPENAI_API_KEY === 'your-openai-api-key-here') {
-                    console.warn('⚠️ Please replace "your-openai-api-key-here" with your actual OpenAI API key');
-                }
-            }
-
-            clearWelcomeMessage() {
-                setTimeout(() => {
-                    const welcomeMsg = this.chatContainer.querySelector('.welcome-message');
-                    if (welcomeMsg && this.chatContainer.children.length === 1) {
-                        // Only remove if it's the only child (no real messages yet)
-                    }
-                }, 100);
-            }
-
-            sendMessage() {
-                const message = this.messageInput.value.trim();
-                if (!message) return;
-
-                // Disable input while processing
-                this.setInputEnabled(false);
-
-                // Remove welcome message when first real message is sent
-                const welcomeMsg = this.chatContainer.querySelector('.welcome-message');
-                if (welcomeMsg) {
-                    welcomeMsg.remove();
-                }
-
-                // Add user message
-                this.addMessage(message, 'user');
-                this.messageInput.value = '';
-
-                // Show typing indicator and get AI response
-                this.showTypingIndicator();
-                this.getCatResponse(message);
-            }
-
-            addMessage(text, sender) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${sender}`;
-                
-                const bubble = document.createElement('div');
-                bubble.className = 'message-bubble';
-                bubble.textContent = text;
-                
-                const time = document.createElement('div');
-                time.className = 'message-time';
-                time.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                
-                bubble.appendChild(time);
-                messageDiv.appendChild(bubble);
-                this.chatContainer.appendChild(messageDiv);
-                
-                this.scrollToBottom();
-            }
-
-            async getCatResponse(userMessage) {
-                try {
-                    const response = await fetch(this.OPENAI_API_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${this.OPENAI_API_KEY}`
-                        },
-                        body: JSON.stringify({
-                            model: 'gpt-4o-mini',
-                            messages: [
-                                {
-                                    role: 'system',
-                                    content: this.catSystemPrompt
-                                },
-                                {
-                                    role: 'user',
-                                    content: userMessage
-                                }
-                            ],
-                            max_tokens: 150,
-                            temperature: 0.9
-                        })
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`API request failed: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-                    const aiResponse = data.choices[0].message.content.trim();
-                    
-                    this.hideTypingIndicator();
-                    this.addMessage(aiResponse, 'cat');
-                    
-                } catch (error) {
-                    console.error('Error getting AI response:', error);
-                    this.hideTypingIndicator();
-                    
-                    // Fallback to random meow if API fails
-                    const fallbackResponse = this.catResponses[Math.floor(Math.random() * this.catResponses.length)];
-                    this.addMessage(fallbackResponse + ' (API error - using fallback)', 'cat');
-                } finally {
-                    this.setInputEnabled(true);
-                }
-            }
-
-            setInputEnabled(enabled) {
-                this.messageInput.disabled = !enabled;
-                this.sendButton.disabled = !enabled;
-                this.messageInput.style.opacity = enabled ? '1' : '0.6';
-                this.sendButton.style.opacity = enabled ? '1' : '0.6';
-            }
-
-            showTypingIndicator() {
-                this.typingIndicator.style.display = 'flex';
-                this.scrollToBottom();
-            }
-
-            hideTypingIndicator() {
-                this.typingIndicator.style.display = 'none';
-            }
-
-            scrollToBottom() {
-                setTimeout(() => {
-                    this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
-                }, 100);
-            }
-        }
-
-        // Initialize the game when page loads
-        window.addEventListener('DOMContentLoaded', () => {
-            new AICatGame();
-        });
-    </script>
+    <script src="game.js"></script>
 </body>
 </html>
