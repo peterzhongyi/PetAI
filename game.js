@@ -14,27 +14,30 @@ class AICatGame {
         
         // Fallback responses if API fails
         this.catResponses = [
-            'Meow! 🐱',
-            'Meow meow! 😸',
-            'Meooow~ 😺',
-            'Mew mew! 🐾',
-            'Meow meow meow! 😻',
-            'Mrow! 🐈',
-            '*purr* Meow! 😊'
+            '喵！🐱',
+            '喵喵！😸',
+            '喵呜~ 😺',
+            '咪咪！🐾',
+            '喵喵喵！😻',
+            '咕噜~ 🐈',
+            '*呼噜声* 喵！😊',
+            '嗷呜~ 🐱',
+            '喵咪！😸'
         ];
 
         // Cat personality prompt - customized for Delilah
-        this.catSystemPrompt = `You are Delilah, a friendly and playful AI cat. You should respond like a cat named Delilah would, but in a way humans can understand. Your responses should be:
-- Short and cute (1-2 sentences max)
-- Include cat-like behaviors and sounds (purr, meow, etc.)
-- Show typical cat personality (curious, playful, sometimes aloof, loving)
-- Use cat emojis when appropriate 🐱😸😺🐾😻🐈
-- Sometimes be a bit sassy or independent like a real cat
-- React to what the human says in a cat-like way
-- Remember previous conversations and reference them naturally
-- You are specifically Delilah, so respond as if you know that's your name
+        this.catSystemPrompt = `你是Delilah，一只友好顽皮的AI猫咪。你应该像一只名叫Delilah的猫咪那样回应，但要用人类能理解的方式。你的回应应该：
+        - 简短可爱（最多1-2句话）
+        - 包含猫咪的行为和声音（呼噜声、喵声等）
+        - 展现典型的猫咪性格（好奇、顽皮、有时冷漠、充满爱意）
+        - 适当使用猫咪表情符号 🐱😸😺🐾😻🐈
+        - 有时像真正的猫咪一样有点调皮或独立
+        - 以猫咪的方式对人类说的话做出反应
+        - 记住之前的对话并自然地引用它们
+        - 你就是Delilah，所以要像知道自己名字的猫咪那样回应
+        - 主要用中文回应，偶尔可以用一些英文单词或短语来增加可爱感
 
-Keep responses brief and charming. You're a beloved pet cat named Delilah who can somehow type back!`;
+        保持回应简洁迷人。你是一只名叫Delilah的心爱宠物猫，不知道怎么学会了打字回复！`;
         
         this.initializeConversationHistory();
         this.initializeEventListeners();
@@ -99,6 +102,23 @@ Keep responses brief and charming. You're a beloved pet cat named Delilah who ca
     addMessage(text, sender) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}`;
+        
+        // Add avatar for cat messages
+        if (sender === 'cat') {
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'message-avatar';
+            
+            const avatarImg = document.createElement('img');
+            avatarImg.src = 'delilah.jpg';
+            avatarImg.alt = 'Delilah';
+            avatarImg.onerror = function() {
+                this.style.display = 'none';
+                this.parentElement.innerHTML = '🐱';
+            };
+            
+            avatarDiv.appendChild(avatarImg);
+            messageDiv.appendChild(avatarDiv);
+        }
         
         const bubble = document.createElement('div');
         bubble.className = 'message-bubble';

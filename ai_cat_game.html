@@ -115,6 +115,8 @@
             display: flex;
             margin-bottom: 15px;
             animation: slideIn 0.3s ease-out;
+            align-items: flex-end; /* Align avatar with bottom of message */
+            gap: 8px; /* Space between avatar and message */
         }
 
         @keyframes slideIn {
@@ -128,6 +130,33 @@
 
         .message.cat {
             justify-content: flex-start;
+        }
+
+        /* New avatar styles for chat messages */
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0; /* Prevent avatar from shrinking */
+            overflow: hidden;
+        }
+
+        .message-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* User messages don't need avatars, so hide them */
+        .message.user .message-avatar {
+            display: none;
         }
 
         .message-bubble {
