@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whiskers - Your AI Cat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .phone-container {
+            width: 380px;
+            height: 680px;
+            background: #2c2c2c;
+            border-radius: 25px;
+            padding: 10px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .screen {
+            flex: 1;
+            background: #1a1a1a;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .cat-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .cat-info h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .cat-status {
+            font-size: 14px;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .chat-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: linear-gradient(to bottom, #0f0f0f, #1a1a1a);
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.cat {
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.cat .message-bubble {
+            background: #333;
+            color: #fff;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #444;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .message.cat .message-time {
+            text-align: left;
+        }
+
+        .input-container {
+            padding: 20px;
+            background: #222;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .message-input {
+            flex: 1;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 25px;
+            padding: 12px 18px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .message-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .send-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .send-button:active {
+            transform: scale(0.95);
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            padding: 12px 16px;
+            background: #333;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            max-width: 70%;
+            margin-bottom: 15px;
+            border: 1px solid #444;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #888;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #888;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="screen">
+            <div class="header">
+                <div class="cat-avatar">🐱</div>
+                <div class="cat-info">
+                    <h2>Whiskers</h2>
+                    <div class="cat-status">
+                        <div class="online-dot"></div>
+                        <span>Online • Ready to chat</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-container" id="chatContainer">
+                <div class="welcome-message">
+                    Start chatting with Whiskers! 🐾<br>
+                    Your AI cat friend is ready to meow back!
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <span style="color: #888; font-size: 12px;">Whiskers is typing</span>
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <input 
+                    type="text" 
+                    class="message-input" 
+                    id="messageInput" 
+                    placeholder="Type a message to Whiskers..."
+                    maxlength="500"
+                >
+                <button class="send-button" id="sendButton">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class AICatGame {
+            constructor() {
+                this.chatContainer = document.getElementById('chatContainer');
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.typingIndicator = document.getElementById('typingIndicator');
+                
+                this.catResponses = [
+                    'Meow! 🐱',
+                ];
+                
+                this.initializeEventListeners();
+                this.clearWelcomeMessage();
+            }
+
+            initializeEventListeners() {
+                this.sendButton.addEventListener('click', () => this.sendMessage());
+                this.messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.sendMessage();
+                });
+            }
+
+            clearWelcomeMessage() {
+                setTimeout(() => {
+                    const welcomeMsg = this.chatContainer.querySelector('.welcome-message');
+                    if (welcomeMsg && this.chatContainer.children.length === 1) {
+                        // Only remove if it's the only child (no real messages yet)
+                    }
+                }, 100);
+            }
+
+            sendMessage() {
+                const message = this.messageInput.value.trim();
+                if (!message) return;
+
+                // Remove welcome message when first real message is sent
+                const welcomeMsg = this.chatContainer.querySelector('.welcome-message');
+                if (welcomeMsg) {
+                    welcomeMsg.remove();
+                }
+
+                // Add user message
+                this.addMessage(message, 'user');
+                this.messageInput.value = '';
+
+                // Show typing indicator and simulate cat thinking
+                this.showTypingIndicator();
+                
+                // Random delay between 1-3 seconds to make it feel more natural
+                const delay = Math.random() * 2000 + 1000;
+                setTimeout(() => {
+                    this.hideTypingIndicator();
+                    this.addCatResponse();
+                }, delay);
+            }
+
+            addMessage(text, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                
+                const bubble = document.createElement('div');
+                bubble.className = 'message-bubble';
+                bubble.textContent = text;
+                
+                const time = document.createElement('div');
+                time.className = 'message-time';
+                time.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                bubble.appendChild(time);
+                messageDiv.appendChild(bubble);
+                this.chatContainer.appendChild(messageDiv);
+                
+                this.scrollToBottom();
+            }
+
+            addCatResponse() {
+                const randomResponse = this.catResponses[Math.floor(Math.random() * this.catResponses.length)];
+                this.addMessage(randomResponse, 'cat');
+            }
+
+            showTypingIndicator() {
+                this.typingIndicator.style.display = 'flex';
+                this.scrollToBottom();
+            }
+
+            hideTypingIndicator() {
+                this.typingIndicator.style.display = 'none';
+            }
+
+            scrollToBottom() {
+                setTimeout(() => {
+                    this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+                }, 100);
+            }
+        }
+
+        // Initialize the game when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            new AICatGame();
+        });
+    </script>
+</body>
+</html>
